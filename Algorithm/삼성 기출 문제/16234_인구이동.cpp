@@ -1,6 +1,7 @@
 #include <iostream>
 #include <queue>
 #include <utility>
+#include <tuple>
 #include <vector>
 using namespace std;
 
@@ -10,19 +11,10 @@ int dy[4] = { -1, 1, 0, 0 };
 
 vector<vector<int>> a;
 
-void print(vector<vector<int>> d) {
-	cout << "\n";
-	for (int i = 0; i < n; i++) {
-		for (int j = 0; j < n; j++) {
-			cout << d[i][j] << " ";
-		}
-		cout << "\n";
-	}
-}
-
-
-int bfs(int x, int y, int num, vector<vector<int>> &d) {
+pair<int, int> bfs(int x, int y, int num, vector<vector<int>> &d) {
 	int cnt = 1;
+	int sum = a[x][y];
+
 	queue<pair<int, int>> q;
 	d[x][y] = num;
 	q.push(make_pair(x, y));
@@ -45,25 +37,44 @@ int bfs(int x, int y, int num, vector<vector<int>> &d) {
 			if (diff >= l && diff <= r) {
 				d[nx][ny] = num;
 				q.push(make_pair(nx, ny));
+				sum += a[nx][ny];
 				cnt++;
 			}
 		}
 	}
 
-	return cnt;
+	return make_pair(cnt, sum);
+}
+
+void move(vector<tuple<int, int, int>> &merged, vector<vector<int>> &d) {
+	int size = merged.size();
+
+	for (int k = 0; k < size; k++) {
+		int num, cnt, sum;
+		tie(num, cnt, sum) = merged[k];
+
+		int value = sum / cnt;
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
+				if (d[i][j] == num) {
+					a[i][j] = value;
+				}
+			}
+		}
+	}
 }
 
 bool checkMove() {
-	vector<pair<int, int>> merged;
+	vector<tuple<int, int, int>> merged;
 	vector<vector<int>> d(n, vector<int>(n, -1));
 	int num = 1;
 
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < n; j++) {
 			if (d[i][j] == -1) {
-				int result = bfs(i, j, num, d);
-				if (result > 1) {
-					merged.push_back(make_pair(num, result));
+				pair<int, int> result = bfs(i, j, num, d);
+				if (result.first > 1) {
+					merged.push_back(make_tuple(num, result.first, result.second));
 				}
 				num++;
 			}
@@ -71,28 +82,7 @@ bool checkMove() {
 	}
 
 	if (merged.size() > 0) {
-		for (int k = 0; k < merged.size(); k++) {
-			int num = merged[k].first;
-			int cnt = merged[k].second;
-			
-			int sum = 0;
-			for (int i = 0; i < n; i++) {
-				for (int j = 0; j < n; j++) {
-					if (d[i][j] == num) {
-						sum += a[i][j];
-					}
-				}
-			}
-
-			int value = sum / cnt;
-			for (int i = 0; i < n; i++) {
-				for (int j = 0; j < n; j++) {
-					if (d[i][j] == num) {
-						a[i][j] = value;
-					}
-				}
-			}
-		}
+		move(merged, d);
 		return true;
 	}
 	else {
@@ -101,7 +91,6 @@ bool checkMove() {
 }
 
 int main() {
-
 	int result = 0;
 	cin >> n >> l >> r;
 	a.assign(n, vector<int>(n));
