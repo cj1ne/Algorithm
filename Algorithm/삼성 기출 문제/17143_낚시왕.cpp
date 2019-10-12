@@ -13,16 +13,6 @@ int h, w;
 vector<vector<bool>> d;
 vector<vector<tuple<int, int, int>>> shark;
 
-void printShark() {
-	cout << "\n";
-	for (int i = 0; i < h; i++) {
-		for (int j = 0; j < w; j++) {
-			cout << d[i][j] << " ";
-		}
-		cout << "\n";
-	}
-}
-
 void moveShark() {
 	queue<pair<int, int>> q;
 	vector<vector<bool>> selected(h, vector<bool>(w, false));
@@ -160,15 +150,3 @@ int main() {
 	cout << getShark() << "\n";
 	return 0;
 }
-
-/*
-
-1. 상어가 이동하는 규칙을 단순한 식으로 세우려고 하다가 간단하게 식도 찾지 못하고 시간을 오래 잡았다.
-이쁘게 만드려는 것보다 알고리즘은 우선 풀어내는 것이 중요하다.
-
-문제의 조건에 대해 파고 들지 않았다. 조금만 더 생각해봐도 예외를 잡을 수 있었는데 말이다.
-
-항상 메모리를 많이 사용하지 않으려고 하다보니까, 오히려 주객전도 현상이 일어났다. 초과가 되지 않는 이상 문제 해결이 메모리 관리보다 우선 사항이다.
-
-
-*/
