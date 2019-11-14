@@ -1,11 +1,9 @@
 #include <iostream>
-#include <regex>
 #include <string>
 #include <vector>
 #include <map>
 
 using namespace std;
-
 vector<int> solution(vector<string> words, vector<string> queries) {
 	vector<int> answer;
 	map<string, int> result;
@@ -16,10 +14,11 @@ vector<int> solution(vector<string> words, vector<string> queries) {
 		string query = queries[i];
 
 		if (result.count(query) == 0) {
+			int count = 0;
 			int length = query.length();
+
 			int start = query.find_first_of('?');
 			int end = query.find_last_of('?');
-			int count = 0;
 
 			if (start > length  && end > length) {
 				for (int j = 0; j < word_size; j++) {
@@ -29,15 +28,18 @@ vector<int> solution(vector<string> words, vector<string> queries) {
 					}
 				}
 				answer.push_back(count);
+				result.insert(make_pair(query, count));
 			}
 			else {
 				if (start > 0) {
 					for (int j = 0; j < word_size; j++) {
-						if (length != words[j].length()) continue;
+						string word = words[j];
+
+						if (length != word.length()) continue;
 						bool check = true;
 
 						for (int k = 0; k < start; k++) {
-							if (query[k] != words[j][k]) {
+							if (query[k] != word[k]) {
 								check = false;
 								break;
 							}
@@ -50,11 +52,13 @@ vector<int> solution(vector<string> words, vector<string> queries) {
 				}
 				else {
 					for (int j = 0; j < word_size; j++) {
-						if (length != words[j].length()) continue;
+						string word = words[j];
+
+						if (length != word.length()) continue;
 						bool check = true;
 
 						for (int k = end + 1; k < length; k++) {
-							if (query[k] != words[j][k]) {
+							if (query[k] != word[k]) {
 								check = false;
 								break;
 							}
@@ -65,6 +69,7 @@ vector<int> solution(vector<string> words, vector<string> queries) {
 						}
 					}
 				}
+				result.insert(make_pair(query, count));
 				answer.push_back(count);
 			}
 		}
@@ -80,8 +85,6 @@ int main() {
 	vector<string> queries = { "fro??", "????o", "fr???", "fro???", "pro?" };
 	
 	vector<int> result = solution(words, queries);
-	
-	cout << "\n";
 	for (int i = 0; i < result.size(); i++) {
 		cout << result[i] << " ";
 	}
